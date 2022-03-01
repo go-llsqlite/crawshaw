@@ -886,3 +886,19 @@ func TestReturningClause(t *testing.T) {
 		t.Fatalf("want returned fruit id to be 1, got %d", id)
 	}
 }
+
+func TestVirtualTableWithTokenizer(t *testing.T) {
+	c, err := sqlite.OpenConn(":memory:", 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		if err := c.Close(); err != nil {
+			t.Error(err)
+		}
+	}()
+	stmt := c.Prep(`CREATE VIRTUAL TABLE IF NOT EXISTS fts_table USING fts5(text, tokenize = 'porter trigram')`)
+	if _, err := stmt.Step(); err != nil {
+		t.Fatal(err)
+	}
+}
