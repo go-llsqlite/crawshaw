@@ -87,6 +87,10 @@ type Conn struct {
 	line       int
 }
 
+func (me *Conn) CSqliteObject() *C.sqlite3 {
+	return me.conn
+}
+
 // sqlitex_pool is used by sqlitex.Open to tell OpenConn that there is
 // one more layer in the stack calls before reaching a user function.
 const sqlitex_pool = OpenFlags(0x01000000)
@@ -169,7 +173,6 @@ func openConn(path string, flags ...OpenFlags) (*Conn, error) {
 			return nil, err
 		}
 	}
-
 
 	return conn, nil
 }
