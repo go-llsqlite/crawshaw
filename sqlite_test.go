@@ -546,6 +546,10 @@ type errWithMessage struct {
 	msg string
 }
 
+func (e errWithMessage) Unwrap() error {
+	return e.err
+}
+
 func (e errWithMessage) Cause() error {
 	return e.err
 }

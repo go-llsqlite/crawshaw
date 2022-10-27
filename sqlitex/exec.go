@@ -24,8 +24,8 @@ import (
 	"reflect"
 	"strings"
 
-	"zombiezen.com/go/sqlite"
-	"zombiezen.com/go/sqlite/fs"
+	"crawshaw.io/sqlite"
+	"crawshaw.io/sqlite/fs"
 )
 
 // ExecOptions is the set of optional arguments executing a statement.

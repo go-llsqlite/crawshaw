@@ -22,7 +22,7 @@ import (
 	"reflect"
 	"testing"
 
-	"zombiezen.com/go/sqlite"
+	"crawshaw.io/sqlite"
 )
 
 func TestExec(t *testing.T) {
