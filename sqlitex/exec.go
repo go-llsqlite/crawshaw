@@ -64,6 +64,10 @@ type ExecOptions struct {
 	// If ResultFunc returns an error then iteration ceases
 	// and the execution function returns the error value.
 	ResultFunc func(stmt *sqlite.Stmt) error
+
+	// Allow unused parameters. SQLite normally treats these as null anyway, so this reverts to the
+	// default behaviour.
+	AllowUnused bool
 }
 
 // Exec executes an SQLite query.
@@ -420,7 +424,7 @@ func ExecuteScript(conn *sqlite.Conn, queries string, opts *ExecOptions) (err er
 			return err
 		}
 	}
-	if len(unused) > 0 {
+	if len(unused) > 0 && !opts.AllowUnused {
 		return fmt.Errorf("%w: unknown argument %s", sqlite.ResultRange.ToError(), minStringInSet(unused))
 	}
 	return nil
