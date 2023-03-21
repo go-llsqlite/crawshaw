@@ -1041,6 +1041,10 @@ func (stmt *Stmt) ColumnBytes(col int, buf []byte) int {
 	return copy(buf, stmt.columnBytes(col))
 }
 
+func (stmt *Stmt) ColumnViewBytes(col int) []byte {
+	return stmt.columnBytes(col)
+}
+
 // ColumnReader creates a byte reader for a query result column.
 //
 // The reader directly references C-managed memory that stops
