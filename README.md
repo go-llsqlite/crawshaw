@@ -4,15 +4,15 @@
 
 This project is a community-managed fork of https://github.com/crawshaw/sqlite.
 
-This package provides a low-level Go interface to SQLite 3. Connections are [pooled](https://godoc.org/crawshaw.io/sqlite#Pool) and if the SQLite [shared cache](https://www.sqlite.org/sharedcache.html) mode is enabled the package takes advantage of the [unlock-notify API](https://www.sqlite.org/unlock_notify.html) to minimize the amount of handling user code needs for dealing with database lock contention.
+This package provides a low-level Go interface to SQLite 3. Connections are [pooled](https://pkg.go.dev/github.com/go-llsqlite/llsqlite#Pool) and if the SQLite [shared cache](https://www.sqlite.org/sharedcache.html) mode is enabled the package takes advantage of the [unlock-notify API](https://www.sqlite.org/unlock_notify.html) to minimize the amount of handling user code needs for dealing with database lock contention.
 
 It has interfaces for some of SQLite's more interesting extensions, such as [incremental BLOB I/O](https://www.sqlite.org/c3ref/blob_open.html) and the [session extension](https://www.sqlite.org/sessionintro.html).
 
-A utility package, [sqlitex](https://godoc.org/crawshaw.io/sqlite/sqlitex), provides some higher-level tools for making it easier to perform common tasks with SQLite. In particular it provides support to make nested transactions easy to use via [sqlitex.Save](https://godoc.org/crawshaw.io/sqlite/sqlitex#Save).
+A utility package, [sqlitex](https://pkg.go.dev/github.com/go-llsqlite/llsqlite/sqlitex), provides some higher-level tools for making it easier to perform common tasks with SQLite. In particular it provides support to make nested transactions easy to use via [sqlitex.Save](https://pkg.go.dev/github.com/go-llsqlite/llsqlite/sqlitex#Save).
 
 This is not a database/sql driver.
 
-```go get -u crawshaw.io/sqlite```
+```go get -u github.com/go-llsqlite/llsqlite```
 
 ## Example
 
@@ -51,7 +51,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-https://godoc.org/crawshaw.io/sqlite
+https://pkg.go.dev/github.com/go-llsqlite/llsqlite
 
 ## Platform specific considerations
 
