@@ -1,6 +1,8 @@
-# Go interface to SQLite.
+# Low-level Go interface to SQLite
 
-[![GoDoc](https://godoc.org/crawshaw.io/sqlite?status.svg)](https://godoc.org/crawshaw.io/sqlite) [![Build Status](https://travis-ci.org/crawshaw/sqlite.svg?branch=master)](https://travis-ci.org/crawshaw/sqlite) (linux and macOS) [![Build status](https://ci.appveyor.com/api/projects/status/jh9xx6cut73ufkl8?svg=true)](https://ci.appveyor.com/project/crawshaw/sqlite) (windows)
+[![Go Reference](https://pkg.go.dev/badge/github.com/go-llsqlite/llsqlite.svg)](https://pkg.go.dev/github.com/go-llsqlite/llsqlite)
+
+This project is a community-managed fork of https://github.com/crawshaw/sqlite.
 
 This package provides a low-level Go interface to SQLite 3. Connections are [pooled](https://godoc.org/crawshaw.io/sqlite#Pool) and if the SQLite [shared cache](https://www.sqlite.org/sharedcache.html) mode is enabled the package takes advantage of the [unlock-notify API](https://www.sqlite.org/unlock_notify.html) to minimize the amount of handling user code needs for dealing with database lock contention.
 
