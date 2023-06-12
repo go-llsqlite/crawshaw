@@ -4,7 +4,7 @@ import (
 	"context"
 	"runtime"
 
-	"crawshaw.io/sqlite"
+	"github.com/go-llsqlite/llsqlite"
 )
 
 // GetSnapshot returns a Snapshot that should remain available for reads until

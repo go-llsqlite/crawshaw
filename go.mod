@@ -1,4 +1,4 @@
-module crawshaw.io/sqlite
+module github.com/go-llsqlite/llsqlite
 
 go 1.12
 

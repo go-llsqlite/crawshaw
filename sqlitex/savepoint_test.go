@@ -23,7 +23,7 @@ import (
 	"testing"
 	"time"
 
-	"crawshaw.io/sqlite"
+	"github.com/go-llsqlite/llsqlite"
 )
 
 func TestExec(t *testing.T) {

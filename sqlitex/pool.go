@@ -21,7 +21,7 @@ import (
 	"sync"
 	"time"
 
-	"crawshaw.io/sqlite"
+	"github.com/go-llsqlite/llsqlite"
 )
 
 // Pool is a pool of SQLite connections.

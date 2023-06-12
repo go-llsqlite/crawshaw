@@ -13,14 +13,14 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 // Package sqlitex provides utilities for working with SQLite.
-package sqlitex // import "crawshaw.io/sqlite/sqlitex"
+package sqlitex // import "github.com/go-llsqlite/llsqlite/sqlitex"
 
 import (
 	"fmt"
 	"reflect"
 	"strings"
 
-	"crawshaw.io/sqlite"
+	"github.com/go-llsqlite/llsqlite"
 )
 
 // Exec executes an SQLite query.

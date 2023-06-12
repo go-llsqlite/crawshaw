@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"io"
 
-	"crawshaw.io/sqlite"
+	"github.com/go-llsqlite/llsqlite"
 )
 
 // File is a readable, writable, and seekable series of temporary SQLite blobs.

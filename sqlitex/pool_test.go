@@ -24,8 +24,8 @@ import (
 	"testing"
 	"time"
 
-	"crawshaw.io/sqlite"
-	"crawshaw.io/sqlite/sqlitex"
+	"github.com/go-llsqlite/llsqlite"
+	"github.com/go-llsqlite/llsqlite/sqlitex"
 )
 
 const (

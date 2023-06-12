@@ -14,5 +14,5 @@
 package sqlite
 
 import (
-	_ "crawshaw.io/sqlite/c"
+	_ "github.com/go-llsqlite/llsqlite/c"
 )
