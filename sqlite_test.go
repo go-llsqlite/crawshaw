@@ -1,4 +1,5 @@
 // Copyright (c) 2018 David Crawshaw <david@zentus.com>
+// Copyright (c) 2021 Ross Light <ross@zombiezen.com>
 //
 // Permission to use, copy, modify, and distribute this software for any
 // purpose with or without fee is hereby granted, provided that the above
@@ -11,6 +12,8 @@
 // WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 // ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+//
+// SPDX-License-Identifier: ISC
 
 package sqlite_test
 
@@ -546,6 +549,10 @@ type errWithMessage struct {
 	msg string
 }
 
+func (e errWithMessage) Unwrap() error {
+	return e.err
+}
+
 func (e errWithMessage) Cause() error {
 	return e.err
 }
@@ -728,6 +735,43 @@ func TestBusyTimeout(t *testing.T) {
 
 	c0Unlock()
 	<-done
+}
+
+func TestBlockOnBusy(t *testing.T) {
+	dir := t.TempDir()
+	db := filepath.Join(dir, "busytest.db")
+	const flags = sqlite.SQLITE_OPEN_READWRITE | sqlite.SQLITE_OPEN_CREATE | sqlite.SQLITE_OPEN_WAL
+
+	conn0, err := sqlite.OpenConn(db, flags)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		if err := conn0.Close(); err != nil {
+			t.Error(err)
+		}
+	}()
+
+	conn1, err := sqlite.OpenConn(db, flags)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		if err := conn1.Close(); err != nil {
+			t.Error(err)
+		}
+	}()
+
+	if _, err := conn0.Prep("BEGIN EXCLUSIVE;").Step(); err != nil {
+		t.Fatal(err)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	conn1.SetInterrupt(ctx.Done())
+	_, err = conn1.Prep("BEGIN EXCLUSIVE;").Step()
+	cancel()
+	if code := sqlite.ErrCode(err); code != sqlite.SQLITE_BUSY {
+		t.Errorf("Concurrent transaction error: %v (code=%v); want code=%v", err, code, sqlite.SQLITE_BUSY)
+	}
 }
 
 func TestColumnIndex(t *testing.T) {

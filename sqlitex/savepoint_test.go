@@ -26,7 +26,7 @@ import (
 	"github.com/go-llsqlite/llsqlite"
 )
 
-func TestExec(t *testing.T) {
+func TestSaveExec(t *testing.T) {
 	conn, err := sqlite.OpenConn(":memory:", 0)
 	if err != nil {
 		t.Fatal(err)

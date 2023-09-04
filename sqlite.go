@@ -1,4 +1,5 @@
 // Copyright (c) 2018 David Crawshaw <david@zentus.com>
+// Copyright (c) 2021 Ross Light <ross@zombiezen.com>
 //
 // Permission to use, copy, modify, and distribute this software for any
 // purpose with or without fee is hereby granted, provided that the above
@@ -11,55 +12,11 @@
 // WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 // ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+//
+// SPDX-License-Identifier: ISC
 
 package sqlite
 
-// // !!! UPDATE THE Makefile WITH THESE DEFINES !!!
-// #cgo CFLAGS: -DSQLITE_THREADSAFE=2
-// #cgo CFLAGS: -DSQLITE_DEFAULT_WAL_SYNCHRONOUS=1
-// #cgo CFLAGS: -DSQLITE_ENABLE_UNLOCK_NOTIFY
-// #cgo CFLAGS: -DSQLITE_ENABLE_FTS5
-// #cgo CFLAGS: -DSQLITE_ENABLE_RTREE
-// #cgo CFLAGS: -DSQLITE_LIKE_DOESNT_MATCH_BLOBS
-// #cgo CFLAGS: -DSQLITE_OMIT_DEPRECATED
-// #cgo CFLAGS: -DSQLITE_ENABLE_JSON1
-// #cgo CFLAGS: -DSQLITE_ENABLE_SESSION
-// #cgo CFLAGS: -DSQLITE_ENABLE_SNAPSHOT
-// #cgo CFLAGS: -DSQLITE_ENABLE_PREUPDATE_HOOK
-// #cgo CFLAGS: -DSQLITE_USE_ALLOCA
-// #cgo CFLAGS: -DSQLITE_ENABLE_COLUMN_METADATA
-// #cgo CFLAGS: -DHAVE_USLEEP=1
-// #cgo CFLAGS: -DSQLITE_DQS=0
-// #cgo CFLAGS: -DSQLITE_ENABLE_GEOPOLY
-// #cgo windows LDFLAGS: -lwinpthread
-// #cgo linux LDFLAGS: -ldl -lm
-// #cgo linux CFLAGS: -std=c99
-// #cgo openbsd LDFLAGS: -lm
-// #cgo openbsd CFLAGS: -std=c99
-// #cgo freebsd LDFLAGS: -lm
-// #cgo freebsd CFLAGS: -std=c99
-// // !!! UPDATE THE Makefile WITH THESE DEFINES !!!
-//
-// #include <blocking_step.h>
-// #include <sqlite3.h>
-// #include <stdlib.h>
-// #include <string.h>
-// #include "wrappers.h"
-//
-// // Use a helper function here to avoid the cgo pointer detection
-// // logic treating SQLITE_TRANSIENT as a Go pointer.
-// static int transient_bind_blob(sqlite3_stmt* stmt, int col, unsigned char* p, int n) {
-//	return sqlite3_bind_blob(stmt, col, p, n, SQLITE_TRANSIENT);
-// }
-//
-// extern void log_fn(void* pArg, int code, char* msg);
-// static void enable_logging() {
-//	sqlite3_config(SQLITE_CONFIG_LOG, log_fn, NULL);
-// }
-//
-// static int db_config_onoff(sqlite3* db, int op, int onoff) {
-//   return sqlite3_db_config(db, op, onoff, NULL);
-// }
 import "C"
 import (
 	"bytes"
@@ -68,6 +25,58 @@ import (
 	"time"
 	"unsafe"
 )
+
+/*
+// !!! UPDATE THE Makefile WITH THESE DEFINES !!!
+#cgo CFLAGS: -DSQLITE_THREADSAFE=2
+#cgo CFLAGS: -DSQLITE_DEFAULT_WAL_SYNCHRONOUS=1
+#cgo CFLAGS: -DSQLITE_ENABLE_UNLOCK_NOTIFY
+#cgo CFLAGS: -DSQLITE_ENABLE_FTS5
+#cgo CFLAGS: -DSQLITE_ENABLE_RTREE
+#cgo CFLAGS: -DSQLITE_LIKE_DOESNT_MATCH_BLOBS
+#cgo CFLAGS: -DSQLITE_OMIT_DEPRECATED
+#cgo CFLAGS: -DSQLITE_ENABLE_JSON1
+#cgo CFLAGS: -DSQLITE_ENABLE_SESSION
+#cgo CFLAGS: -DSQLITE_ENABLE_SNAPSHOT
+#cgo CFLAGS: -DSQLITE_ENABLE_PREUPDATE_HOOK
+#cgo CFLAGS: -DSQLITE_USE_ALLOCA
+#cgo CFLAGS: -DSQLITE_ENABLE_COLUMN_METADATA
+#cgo CFLAGS: -DHAVE_USLEEP=1
+#cgo CFLAGS: -DSQLITE_DQS=0
+#cgo CFLAGS: -DSQLITE_ENABLE_GEOPOLY
+#cgo windows LDFLAGS: -lwinpthread
+#cgo linux LDFLAGS: -ldl -lm
+#cgo linux CFLAGS: -std=c99
+#cgo openbsd LDFLAGS: -lm
+#cgo openbsd CFLAGS: -std=c99
+#cgo freebsd LDFLAGS: -lm
+#cgo freebsd CFLAGS: -std=c99
+// !!! UPDATE THE Makefile WITH THESE DEFINES !!!
+
+#include <blocking_step.h>
+#include <sqlite3.h>
+#include <stdlib.h>
+#include <string.h>
+#include "wrappers.h"
+
+// Use a helper function here to avoid the cgo pointer detection
+// logic treating SQLITE_TRANSIENT as a Go pointer.
+static int transient_bind_blob(sqlite3_stmt* stmt, int col, unsigned char* p, int n) {
+	return sqlite3_bind_blob(stmt, col, p, n, SQLITE_TRANSIENT);
+}
+
+extern void log_fn(void* pArg, int code, char* msg);
+static void enable_logging() {
+	sqlite3_config(SQLITE_CONFIG_LOG, log_fn, NULL);
+}
+
+static int db_config_onoff(sqlite3* db, int op, int onoff) {
+  return sqlite3_db_config(db, op, onoff, NULL);
+}
+
+extern int goBusyHandlerCallback(void *, int);
+*/
+import "C"
 
 // Conn is an open connection to an SQLite3 database.
 //
@@ -157,11 +166,11 @@ func openConn(path string, flags ...OpenFlags) (*Conn, error) {
 		}
 	})
 
-	// Large timeout as Go programs should control timeouts
-	// using SetInterrupt. Documented in SetBusyTimeout.
-	conn.SetBusyTimeout(10 * time.Second)
-
-	if openFlags&SQLITE_OPEN_WAL > 0 {
+	if openFlags&SQLITE_OPEN_WAL != 0 {
+		// Set timeout for enabling WAL.
+		// See https://github.com/crawshaw/sqlite/pull/113 for details.
+		// TODO(maybe): Pass in Context to OpenConn?
+		conn.SetBusyTimeout(10 * time.Second)
 		stmt, _, err := conn.PrepareTransient("PRAGMA journal_mode=wal;")
 		if err != nil {
 			conn.Close()
@@ -174,6 +183,7 @@ func openConn(path string, flags ...OpenFlags) (*Conn, error) {
 		}
 	}
 
+	conn.SetBlockOnBusy()
 	return conn, nil
 }
 
@@ -316,6 +326,78 @@ func (conn *Conn) SetInterrupt(doneCh <-chan struct{}) (oldDoneCh <-chan struct{
 // https://www.sqlite.org/c3ref/busy_timeout.html
 func (conn *Conn) SetBusyTimeout(d time.Duration) {
 	C.sqlite3_busy_timeout(conn.conn, C.int(d/time.Millisecond))
+	busyHandlers.Delete(conn.conn)
+}
+
+// SetBlockOnBusy sets a busy handler that waits to acquire a lock
+// until the connection is interrupted (see SetInterrupt).
+//
+// By default, connections are opened with SetBlockOnBusy,
+// with the assumption that programs use SetInterrupt to control timeouts.
+//
+// https://www.sqlite.org/c3ref/busy_handler.html
+func (c *Conn) SetBlockOnBusy() {
+	if c == nil {
+		return
+	}
+	c.setBusyHandler(func(count int) bool {
+		if count >= len(busyDelays) {
+			count = len(busyDelays) - 1
+		}
+		t := time.NewTimer(busyDelays[count])
+		defer t.Stop()
+		select {
+		case <-t.C:
+			return true
+		case <-c.doneCh:
+			// ^ Assuming that doneCh won't be set by SetInterrupt concurrently
+			// with other operations.
+			return false
+		}
+	})
+}
+
+var busyDelays = [...]time.Duration{
+	1 * time.Second,
+	2 * time.Second,
+	5 * time.Second,
+	10 * time.Second,
+	15 * time.Second,
+	20 * time.Second,
+	25 * time.Second,
+	25 * time.Second,
+	25 * time.Second,
+	50 * time.Second,
+	50 * time.Second,
+	100 * time.Second,
+}
+
+var busyHandlers sync.Map // sqlite3* -> func(int) bool
+
+func (c *Conn) setBusyHandler(handler func(count int) bool) {
+	if c == nil {
+		return
+	}
+	if handler == nil {
+		C.sqlite3_busy_handler(c.conn, nil, nil)
+		busyHandlers.Delete(c.conn)
+		return
+	}
+	busyHandlers.Store(c.conn, handler)
+	C.sqlite3_busy_handler(c.conn, (*[0]byte)(C.goBusyHandlerCallback), unsafe.Pointer(c.conn))
+}
+
+//export goBusyHandlerCallback
+func goBusyHandlerCallback(pArg unsafe.Pointer, count C.int) C.int {
+	val, _ := busyHandlers.Load((*C.sqlite3)(pArg))
+	if val == nil {
+		return 0
+	}
+	f := val.(func(int) bool)
+	if !f(int(count)) {
+		return 0
+	}
+	return 1
 }
 
 func (conn *Conn) interrupted(loc, query string) error {
@@ -957,6 +1039,10 @@ func (stmt *Stmt) ColumnInt64(col int) int64 {
 // https://www.sqlite.org/c3ref/column_blob.html
 func (stmt *Stmt) ColumnBytes(col int, buf []byte) int {
 	return copy(buf, stmt.columnBytes(col))
+}
+
+func (stmt *Stmt) ColumnViewBytes(col int) []byte {
+	return stmt.columnBytes(col)
 }
 
 // ColumnReader creates a byte reader for a query result column.
