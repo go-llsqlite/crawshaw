@@ -176,6 +176,7 @@ func TestSharedCacheLock(t *testing.T) {
 			t.Error(err)
 		}
 	}()
+	c1.SetBusyTimeout(10 * time.Second)
 
 	c0Lock := func() {
 		if _, err := c0.Prep("BEGIN;").Step(); err != nil {
