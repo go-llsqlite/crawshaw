@@ -19,7 +19,7 @@ import (
 	"testing"
 
 	"crawshaw.io/iox/ioxtest"
-	"github.com/go-llsqlite/llsqlite"
+	"github.com/go-llsqlite/crawshaw"
 )
 
 func TestFileRand(t *testing.T) {

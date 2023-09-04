@@ -19,7 +19,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/go-llsqlite/llsqlite"
+	"github.com/go-llsqlite/crawshaw"
 )
 
 // Save creates a named SQLite transaction using SAVEPOINT.

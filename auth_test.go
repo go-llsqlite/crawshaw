@@ -3,7 +3,7 @@ package sqlite_test
 import (
 	"testing"
 
-	"github.com/go-llsqlite/llsqlite"
+	"github.com/go-llsqlite/crawshaw"
 )
 
 func TestSetAuthorizer(t *testing.T) {

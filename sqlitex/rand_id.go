@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/go-llsqlite/llsqlite"
+	"github.com/go-llsqlite/crawshaw"
 )
 
 // InsertRandID executes stmt with a random value in the range [min, max) for $param.

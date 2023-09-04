@@ -18,7 +18,7 @@ import (
 	"errors"
 	"io"
 
-	"github.com/go-llsqlite/llsqlite"
+	"github.com/go-llsqlite/crawshaw"
 )
 
 // A Buffer is a variable-sized bytes buffer backed by SQLite blobs.

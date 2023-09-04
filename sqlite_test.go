@@ -30,8 +30,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/go-llsqlite/llsqlite"
-	"github.com/go-llsqlite/llsqlite/sqlitex"
+	"github.com/go-llsqlite/crawshaw"
+	"github.com/go-llsqlite/crawshaw/sqlitex"
 )
 
 func TestConn(t *testing.T) {

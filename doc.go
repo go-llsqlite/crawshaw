@@ -141,4 +141,4 @@ Using a Pool to execute SQL in a concurrent HTTP handler.
 For helper functions that make some kinds of statements easier to
 write see the sqlitex package.
 */
-package sqlite // import "github.com/go-llsqlite/llsqlite"
+package sqlite // import "github.com/go-llsqlite/crawshaw"

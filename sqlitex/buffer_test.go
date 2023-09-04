@@ -20,7 +20,7 @@ import (
 	"testing"
 
 	"crawshaw.io/iox/ioxtest"
-	"github.com/go-llsqlite/llsqlite"
+	"github.com/go-llsqlite/crawshaw"
 )
 
 func TestBuffer(t *testing.T) {

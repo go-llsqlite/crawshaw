@@ -1,4 +1,4 @@
-module github.com/go-llsqlite/llsqlite
+module github.com/go-llsqlite/crawshaw
 
 go 1.13
 

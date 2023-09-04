@@ -24,7 +24,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/go-llsqlite/llsqlite"
+	"github.com/go-llsqlite/crawshaw"
 )
 
 func TestBlob(t *testing.T) {
