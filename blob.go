@@ -79,11 +79,6 @@ func (conn *Conn) OpenBlob(dbn, table, column string, row int64, write bool) (*B
 
 // Blob provides streaming access to SQLite blobs.
 type Blob struct {
-	io.ReadWriteSeeker
-	io.ReaderAt
-	io.WriterAt
-	io.Closer
-
 	conn *Conn
 	blob *C.sqlite3_blob
 	off  int64
