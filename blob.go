@@ -90,6 +90,20 @@ type Blob struct {
 	size int64
 }
 
+func (blob *Blob) Reopen(rowid int64) (err error) {
+	rc := C.sqlite3_blob_reopen(blob.blob, C.sqlite3_int64(rowid))
+	err = blob.conn.reserr("Blob.Reopen", "", rc)
+	if err != nil {
+		return
+	}
+	blob.setSize()
+	return
+}
+
+func (blob *Blob) setSize() {
+	blob.size = int64(C.sqlite3_blob_bytes(blob.blob))
+}
+
 // https://www.sqlite.org/c3ref/blob_read.html
 func (blob *Blob) ReadAt(p []byte, off int64) (n int, err error) {
 	if blob.blob == nil {
