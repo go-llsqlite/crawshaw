@@ -44,6 +44,7 @@ import (
 #cgo CFLAGS: -DHAVE_USLEEP=1
 #cgo CFLAGS: -DSQLITE_DQS=0
 #cgo CFLAGS: -DSQLITE_ENABLE_GEOPOLY
+#cgo CFLAGS: -DSQLITE_DIRECT_OVERFLOW_READ
 #cgo windows LDFLAGS: -lwinpthread
 #cgo linux LDFLAGS: -ldl -lm
 #cgo linux CFLAGS: -std=c99
