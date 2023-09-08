@@ -696,7 +696,7 @@ func (stmt *Stmt) ClearBindings() error {
 //
 // https://www.sqlite.org/c3ref/step.html
 //
-// Shared cache
+// # Shared cache
 //
 // As the sqlite package enables shared cache mode by default
 // and multiple writers are common in multi-threaded programs,
@@ -1076,11 +1076,11 @@ func (stmt *Stmt) columnBytes(col int) []byte {
 
 // ColumnType are codes for each of the SQLite fundamental datatypes:
 //
-//   64-bit signed integer
-//   64-bit IEEE floating point number
-//   string
-//   BLOB
-//   NULL
+//	64-bit signed integer
+//	64-bit IEEE floating point number
+//	string
+//	BLOB
+//	NULL
 //
 // https://www.sqlite.org/c3ref/c_blob.html
 type ColumnType int
@@ -1113,11 +1113,11 @@ func (t ColumnType) String() string {
 // ColumnType returns the datatype code for the initial data
 // type of the result column. The returned value is one of:
 //
-//   SQLITE_INTEGER
-//   SQLITE_FLOAT
-//   SQLITE_TEXT
-//   SQLITE_BLOB
-//   SQLITE_NULL
+//	SQLITE_INTEGER
+//	SQLITE_FLOAT
+//	SQLITE_TEXT
+//	SQLITE_BLOB
+//	SQLITE_NULL
 //
 // Column indices start at 0.
 //
