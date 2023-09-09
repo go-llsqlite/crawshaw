@@ -20,6 +20,7 @@ package sqlite
 // #include <stdint.h>
 import "C"
 import (
+	"errors"
 	"io"
 	"unsafe"
 )
@@ -102,7 +103,7 @@ func (blob *Blob) setSize() {
 // https://www.sqlite.org/c3ref/blob_read.html
 func (blob *Blob) ReadAt(p []byte, off int64) (n int, err error) {
 	if blob.blob == nil {
-		return 0, errInvalidBlob
+		return 0, ErrBlobClosed
 	}
 	if err := blob.conn.interrupted("Blob.ReadAt", ""); err != nil {
 		return 0, err
@@ -121,7 +122,7 @@ func (blob *Blob) ReadAt(p []byte, off int64) (n int, err error) {
 // https://www.sqlite.org/c3ref/blob_write.html
 func (blob *Blob) WriteAt(p []byte, off int64) (n int, err error) {
 	if blob.blob == nil {
-		return 0, errInvalidBlob
+		return 0, ErrBlobClosed
 	}
 	if err := blob.conn.interrupted("Blob.WriteAt", ""); err != nil {
 		return 0, err
@@ -189,13 +190,11 @@ func (blob *Blob) Size() int64 {
 // https://www.sqlite.org/c3ref/blob_close.html
 func (blob *Blob) Close() error {
 	if blob.blob == nil {
-		return errInvalidBlob
+		return ErrBlobClosed
 	}
 	err := blob.conn.reserr("Blob.Close", "", C.sqlite3_blob_close(blob.blob))
 	blob.blob = nil
 	return err
 }
 
-var errInvalidBlob = Error{Code: SQLITE_ERROR, Msg: "invalid blob"}
-
-// TODO: Blob Reopen
+var ErrBlobClosed = errors.New("blob closed")
