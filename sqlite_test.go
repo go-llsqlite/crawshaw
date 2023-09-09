@@ -452,7 +452,8 @@ func TestBindBytes(t *testing.T) {
 
 			wantEOF := (len(test.val) == 0)
 			storedVal := make([]byte, len(test.val)+8)
-			n, err := blob.Read(storedVal)
+			bs := sqlitex.NewBlobSeeker(blob)
+			n, err := bs.Read(storedVal)
 			if err != nil && (!wantEOF || err != io.EOF) {
 				t.Fatalf("SetBytes: Read: %v", err)
 			}

@@ -21,7 +21,6 @@ package sqlite
 import "C"
 import (
 	"errors"
-	"io"
 	"unsafe"
 )
 
@@ -82,7 +81,6 @@ func (conn *Conn) OpenBlob(dbn, table, column string, row int64, write bool) (*B
 type Blob struct {
 	conn *Conn
 	blob *C.sqlite3_blob
-	off  int64
 	size int64
 }
 
@@ -133,53 +131,6 @@ func (blob *Blob) WriteAt(p []byte, off int64) (n int, err error) {
 		return 0, err
 	}
 	return len(p), nil
-}
-
-func (blob *Blob) Read(p []byte) (n int, err error) {
-	if blob.off >= blob.size {
-		return 0, io.EOF
-	}
-	if rem := blob.size - blob.off; int64(len(p)) > rem {
-		p = p[:rem]
-	}
-	n, err = blob.ReadAt(p, blob.off)
-	blob.off += int64(n)
-	return n, err
-}
-
-func (blob *Blob) Write(p []byte) (n int, err error) {
-	if rem := blob.size - blob.off; int64(len(p)) > rem {
-		return 0, io.ErrShortWrite
-	}
-	n, err = blob.WriteAt(p, blob.off)
-	blob.off += int64(n)
-	return n, err
-}
-
-func (blob *Blob) Seek(offset int64, whence int) (int64, error) {
-	const (
-		SeekStart   = 0
-		SeekCurrent = 1
-		SeekEnd     = 2
-	)
-	switch whence {
-	case SeekStart:
-		// use offset directly
-	case SeekCurrent:
-		offset += blob.off
-	case SeekEnd:
-		offset += blob.size
-	}
-	if offset < 0 {
-		var buf [20]byte
-		return -1, Error{
-			Code: SQLITE_ERROR,
-			Loc:  "Blob.Seek",
-			Msg:  "attempting to seek before beginning of blob: " + string(itoa(buf[:], offset)),
-		}
-	}
-	blob.off = offset
-	return offset, nil
 }
 
 // Size returns the total size of a blob.

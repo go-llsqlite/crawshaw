@@ -17,6 +17,7 @@ package sqlite_test
 import (
 	"bytes"
 	"compress/gzip"
+	"github.com/go-llsqlite/crawshaw/sqlitex"
 	"io"
 	"io/ioutil"
 	"reflect"
@@ -318,19 +319,21 @@ func TestBlobReadWrite(t *testing.T) {
 	}
 	defer b.Close()
 
-	if _, err := b.Write([]byte{1, 2, 3}); err != nil {
+	bs := sqlitex.NewBlobSeeker(b)
+
+	if _, err := bs.Write([]byte{1, 2, 3}); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := b.Write([]byte{4, 5}); err != nil {
+	if _, err := bs.Write([]byte{4, 5}); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := b.Write([]byte{6}); err != io.ErrShortWrite {
+	if _, err := bs.Write([]byte{6}); err != io.ErrShortWrite {
 		t.Errorf("Write past end of blob, want io.ErrShortWrite got: %v", err)
 	}
-	if _, err := b.Seek(0, 0); err != nil {
+	if _, err := bs.Seek(0, 0); err != nil {
 		t.Fatal(err)
 	}
-	if got, err := ioutil.ReadAll(b); err != nil {
+	if got, err := ioutil.ReadAll(bs); err != nil {
 		t.Fatal(err)
 	} else if want := []byte{1, 2, 3, 4, 5}; !reflect.DeepEqual(got, want) {
 		t.Errorf("want %v, got %v", want, got)
@@ -376,13 +379,15 @@ func TestBlobPtrs(t *testing.T) {
 	}
 	defer blob.Close()
 
-	gzw = gzip.NewWriter(blob)
+	bs := sqlitex.NewBlobSeeker(blob)
+
+	gzw = gzip.NewWriter(bs)
 	gzw.Write([]byte("hello"))
 	gzw.Close()
 
-	blob.Seek(0, 0)
+	bs.Seek(0, 0)
 
-	gzr, err := gzip.NewReader(blob)
+	gzr, err := gzip.NewReader(bs)
 	if err != nil {
 		t.Fatal(err)
 	}
