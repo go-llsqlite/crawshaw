@@ -18,8 +18,8 @@
 package sqlite_test
 
 import (
-	"bytes"
 	"context"
+	qt "github.com/frankban/quicktest"
 	"io"
 	"io/ioutil"
 	"os"
@@ -450,19 +450,11 @@ func TestBindBytes(t *testing.T) {
 				}
 			}()
 
-			wantEOF := (len(test.val) == 0)
-			storedVal := make([]byte, len(test.val)+8)
 			bs := sqlitex.NewBlobSeeker(blob)
-			n, err := bs.Read(storedVal)
-			if err != nil && (!wantEOF || err != io.EOF) {
-				t.Fatalf("SetBytes: Read: %v", err)
-			}
-			if got := (err == io.EOF); got != wantEOF {
-				t.Fatalf("SetBytes: Read: got EOF? %t, want %t", got, wantEOF)
-			}
-			if !bytes.Equal(test.val, storedVal[:n]) {
-				t.Fatalf("SetBytes: want: %x, got: %x", test.val, storedVal)
-			}
+			qtc := qt.New(t)
+			storedVal, err := io.ReadAll(bs)
+			qtc.Assert(err, qt.IsNil)
+			qtc.Assert(storedVal, qt.DeepEquals, test.val)
 		})
 	}
 }
