@@ -19,7 +19,6 @@ package sqlite_test
 
 import (
 	"context"
-	qt "github.com/frankban/quicktest"
 	"io"
 	"io/ioutil"
 	"os"
@@ -29,6 +28,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	qt "github.com/frankban/quicktest"
 
 	"github.com/go-llsqlite/crawshaw"
 	"github.com/go-llsqlite/crawshaw/sqlitex"

@@ -17,7 +17,6 @@ package sqlite_test
 import (
 	"bytes"
 	"compress/gzip"
-	"github.com/go-llsqlite/crawshaw/sqlitex"
 	"io"
 	"io/ioutil"
 	"reflect"
@@ -26,6 +25,7 @@ import (
 	"time"
 
 	"github.com/go-llsqlite/crawshaw"
+	"github.com/go-llsqlite/crawshaw/sqlitex"
 )
 
 func TestBlob(t *testing.T) {

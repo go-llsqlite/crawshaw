@@ -20,11 +20,12 @@ package sqlite
 import "C"
 import (
 	"bytes"
-	"github.com/anacrolix/chansync"
 	"runtime"
 	"sync"
 	"time"
 	"unsafe"
+
+	"github.com/anacrolix/chansync"
 )
 
 /*
