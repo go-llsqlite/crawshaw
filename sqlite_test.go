@@ -19,6 +19,7 @@ package sqlite_test
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -538,23 +539,6 @@ func TestExtendedCodes(t *testing.T) {
 	}
 }
 
-type errWithMessage struct {
-	err error
-	msg string
-}
-
-func (e errWithMessage) Unwrap() error {
-	return e.err
-}
-
-func (e errWithMessage) Cause() error {
-	return e.err
-}
-
-func (e errWithMessage) Error() string {
-	return e.msg + ": " + e.err.Error()
-}
-
 func TestWrappedErrors(t *testing.T) {
 	rawErr := sqlite.Error{
 		Code:  sqlite.SQLITE_INTERRUPT,
@@ -565,7 +549,7 @@ func TestWrappedErrors(t *testing.T) {
 		t.Errorf("got err=%s, want %s", got, want)
 	}
 
-	wrappedErr := errWithMessage{err: rawErr, msg: "Doing something"}
+	wrappedErr := fmt.Errorf("Do something: %w", rawErr)
 	if got, want := sqlite.ErrCode(wrappedErr), sqlite.SQLITE_INTERRUPT; got != want {
 		t.Errorf("got err=%s, want %s", got, want)
 	}
