@@ -324,12 +324,13 @@ func setArg(stmt *sqlite.Stmt, i int, v reflect.Value) {
 		stmt.BindBool(i, v.Bool())
 	case reflect.Invalid:
 		stmt.BindNull(i)
-	default:
-		if v.Kind() == reflect.Slice && v.Type().Elem().Kind() == reflect.Uint8 {
+	case reflect.Slice, reflect.Array:
+		if v.Type().Elem().Kind() == reflect.Uint8 {
 			stmt.BindBytes(i, v.Bytes())
-		} else {
-			stmt.BindText(i, fmt.Sprint(v.Interface()))
 		}
+		fallthrough
+	default:
+		stmt.BindText(i, fmt.Sprint(v.Interface()))
 	}
 }
 
