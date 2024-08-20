@@ -29,6 +29,7 @@ import (
 )
 
 /*
+// !!! Dedup these with what's in c/dummy.go. TODO: Work out how to do that nicely !!!
 // !!! UPDATE THE Makefile WITH THESE DEFINES !!!
 #cgo CFLAGS: -DSQLITE_THREADSAFE=2
 #cgo CFLAGS: -DSQLITE_DEFAULT_WAL_SYNCHRONOUS=1
@@ -57,6 +58,7 @@ import (
 // !!! UPDATE THE Makefile WITH THESE DEFINES !!!
 
 #include <blocking_step.h>
+// TODO: Note this should include the version that's local to this dir. It might be possible to hook the local version when statically linking it instead.
 #include <sqlite3.h>
 #include <stdlib.h>
 #include <string.h>
