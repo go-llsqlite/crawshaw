@@ -635,7 +635,6 @@ type Stmt struct {
 }
 
 func (stmt *Stmt) interrupted(loc string) error {
-	loc = "Stmt." + loc
 	if stmt.prepInterrupt {
 		return reserr(loc, stmt.query, "", C.SQLITE_INTERRUPT)
 	}
@@ -691,7 +690,7 @@ func (stmt *Stmt) Reset() error {
 // https://www.sqlite.org/c3ref/clear_bindings.html
 func (stmt *Stmt) ClearBindings() error {
 	stmt.conn.count++
-	if err := stmt.interrupted("ClearBindings"); err != nil {
+	if err := stmt.interrupted("Stmt.ClearBindings"); err != nil {
 		return err
 	}
 	res := C.sqlite3_clear_bindings(stmt.stmt)
@@ -760,7 +759,7 @@ func (stmt *Stmt) Step() (rowReturned bool, err error) {
 func (stmt *Stmt) step() (bool, error) {
 	for {
 		stmt.conn.count++
-		if err := stmt.interrupted("Step"); err != nil {
+		if err := stmt.interrupted("Stmt.Step"); err != nil {
 			return false, err
 		}
 		switch res := C.sqlite3_step(stmt.stmt); uint8(res) { // reduce to non-extended error code
