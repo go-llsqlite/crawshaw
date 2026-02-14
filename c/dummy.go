@@ -26,6 +26,8 @@ package c
 #cgo CFLAGS: -DSQLITE_DQS=0
 #cgo CFLAGS: -DSQLITE_ENABLE_GEOPOLY
 #cgo CFLAGS: -DSQLITE_DIRECT_OVERFLOW_READ
+// False positive in GCC 14/15 at -O3: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=115274
+#cgo CFLAGS: -Wno-stringop-overread
 #cgo windows LDFLAGS: -lwinpthread
 #cgo linux LDFLAGS: -ldl -lm
 #cgo linux CFLAGS: -std=c99
