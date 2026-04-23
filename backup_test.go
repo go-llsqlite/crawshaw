@@ -15,6 +15,7 @@
 package sqlite_test
 
 import (
+	"os"
 	"testing"
 
 	"github.com/go-llsqlite/crawshaw"
@@ -33,6 +34,41 @@ func initSrc(t *testing.T) *sqlite.Conn {
 		t.Fatal(err)
 	}
 	return conn
+}
+
+func TestSerialize(t *testing.T) {
+	conn := initSrc(t)
+	defer conn.Close()
+
+	data, err := conn.Serialize("")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	f, err := os.CreateTemp("", "serialize-test-*.sqlite3")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(f.Name())
+	if _, err := f.Write(data); err != nil {
+		f.Close()
+		t.Fatal(err)
+	}
+	f.Close()
+
+	conn2, err := sqlite.OpenConn(f.Name(), 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer conn2.Close()
+
+	count, err := sqlitex.ResultInt(conn2.Prep(`SELECT count(*) FROM t;`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if count != 2 {
+		t.Fatalf("expected 2 rows in serialized DB, got %d", count)
+	}
 }
 
 func TestBackup(t *testing.T) {
