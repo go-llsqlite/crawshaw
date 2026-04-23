@@ -18,6 +18,7 @@ package sqlite
 // #include <stdlib.h>
 import "C"
 import (
+	"fmt"
 	"runtime"
 	"unsafe"
 )
@@ -130,4 +131,24 @@ func (b *Backup) Remaining() int {
 // https://www.sqlite.org/c3ref/backup_finish.html#sqlite3backuppagecount
 func (b *Backup) PageCount() int {
 	return int(C.sqlite3_backup_pagecount(b.ptr))
+}
+
+// Serialize returns a byte slice containing the complete contents of the
+// named database (use "" or "main" for the main database). The returned
+// slice is a Go-owned copy; the caller may use it freely.
+//
+// https://www.sqlite.org/c3ref/serialize.html
+func (c *Conn) Serialize(dbName string) ([]byte, error) {
+	cname := cmain
+	if dbName != "" && dbName != "main" {
+		cname = C.CString(dbName)
+		defer C.free(unsafe.Pointer(cname))
+	}
+	var size C.sqlite3_int64
+	p := C.sqlite3_serialize(c.conn, cname, &size, 0)
+	if p == nil {
+		return nil, fmt.Errorf("sqlite.Conn.Serialize: out of memory or unsupported")
+	}
+	defer C.sqlite3_free(unsafe.Pointer(p))
+	return C.GoBytes(unsafe.Pointer(p), C.int(size)), nil
 }
