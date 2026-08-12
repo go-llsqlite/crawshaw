@@ -30,7 +30,7 @@ import (
 	"testing"
 	"time"
 
-	qt "github.com/frankban/quicktest"
+	qt "github.com/go-quicktest/qt"
 
 	"github.com/go-llsqlite/crawshaw"
 	"github.com/go-llsqlite/crawshaw/sqlitex"
@@ -453,10 +453,9 @@ func TestBindBytes(t *testing.T) {
 			}()
 
 			bs := sqlitex.NewBlobSeeker(blob)
-			qtc := qt.New(t)
 			storedVal, err := io.ReadAll(bs)
-			qtc.Assert(err, qt.IsNil)
-			qtc.Assert(storedVal, qt.DeepEquals, test.val)
+			qt.Assert(t, qt.IsNil(err))
+			qt.Assert(t, qt.DeepEquals(storedVal, test.val))
 		})
 	}
 }
