@@ -15,7 +15,6 @@ Entries for releases published before this file was added are summarized from ta
 ### Dependencies
 
 - Replaced `github.com/frankban/quicktest` `v1.14.6` with `github.com/go-quicktest/qt` `v1.102.0`.
-- Updated `github.com/anacrolix/chansync` from `v0.3.0` to `v0.8.0`.
 - Updated `github.com/google/go-cmp` from `v0.5.9` to `v0.6.0`.
 - Updated `github.com/rogpeppe/go-internal` from `v1.9.0` to `v1.12.0`.
 
