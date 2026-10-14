@@ -8,6 +8,10 @@ Entries for releases published before this file was added are summarized from ta
 
 ## [Unreleased]
 
+### Added
+
+- Added `Conn.SetDefensive`, wrapping `SQLITE_DBCONFIG_DEFENSIVE`, with the same name and signature as in `zombiezen.com/go/sqlite`.
+
 ### Changed
 
 - Migrated test assertions from the archived `github.com/frankban/quicktest` `v1.14.6` dependency to the maintained `github.com/go-quicktest/qt` `v1.102.0` fork in [#16](https://github.com/go-llsqlite/crawshaw/pull/16).

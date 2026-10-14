@@ -901,3 +901,36 @@ func TestVirtualTableWithTokenizer(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestSetDefensive(t *testing.T) {
+	// With writable_schema on, a direct write to sqlite_schema is the
+	// textbook way for SQL to corrupt its own database. Defensive mode must
+	// refuse it, and turning the flag off must allow it again.
+	for _, defensive := range []bool{true, false} {
+		c, err := sqlite.OpenConn(":memory:", 0)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := c.SetDefensive(defensive); err != nil {
+			t.Fatal(err)
+		}
+		for _, query := range []string{
+			"CREATE TABLE t (a);",
+			"PRAGMA writable_schema = ON;",
+		} {
+			if err := sqlitex.ExecTransient(c, query, nil); err != nil {
+				t.Fatalf("%s: %v", query, err)
+			}
+		}
+		err = sqlitex.ExecTransient(c, "UPDATE sqlite_schema SET sql = sql WHERE name = 't';", nil)
+		if defensive && err == nil {
+			t.Error("defensive: writing sqlite_schema succeeded, want an error")
+		}
+		if !defensive && err != nil {
+			t.Errorf("not defensive: writing sqlite_schema: %v", err)
+		}
+		if err := c.Close(); err != nil {
+			t.Error(err)
+		}
+	}
+}

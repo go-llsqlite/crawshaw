@@ -224,6 +224,27 @@ func (conn *Conn) EnableDoubleQuotedStringLiterals(dml, ddl bool) error {
 	return nil
 }
 
+const SQLITE_DBCONFIG_DEFENSIVE = C.int(C.SQLITE_DBCONFIG_DEFENSIVE)
+
+// SetDefensive turns the defensive flag of the connection on or off.
+//
+// While it is on, SQL statements cannot deliberately corrupt the database
+// file. This turns off, among others, PRAGMA writable_schema=ON,
+// PRAGMA journal_mode=OFF, PRAGMA schema_version=N, writes to the
+// sqlite_dbpage virtual table and direct writes to shadow tables.
+//
+// The name and signature match zombiezen.com/go/sqlite.
+//
+// https://www.sqlite.org/c3ref/c_dbconfig_defensive.html#sqlitedbconfigdefensive
+func (conn *Conn) SetDefensive(enabled bool) error {
+	var enable C.int
+	if enabled {
+		enable = 1
+	}
+	res := C.db_config_onoff(conn.conn, SQLITE_DBCONFIG_DEFENSIVE, enable)
+	return reserr("Conn.SetDefensive", "", "", res)
+}
+
 // CheckReset reports whether any statement on this connection is in the process
 // of returning results.
 func (conn *Conn) CheckReset() string {
