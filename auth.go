@@ -254,7 +254,11 @@ func newActionInfo(action OpType, arg1, arg2, database, trigger string) ActionIn
 	case SQLITE_COPY:
 		/* No longer used */
 	default:
-		panic(fmt.Errorf("unknown action: %v", action))
+		// An action code this package does not decode, such as one added by a
+		// later SQLite. The Authorizer still receives it, with Action,
+		// Database and InnerMostTrigger set, so it can deny it. A panic here
+		// would unwind through SQLite's C stack from the authorizer callback
+		// and end the process.
 	}
 	return a
 }

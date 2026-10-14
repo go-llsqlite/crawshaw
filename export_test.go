@@ -18,6 +18,10 @@ package sqlite
 
 func ConnCount(conn *Conn) int { return conn.count }
 
+func NewActionInfo(action OpType, arg1, arg2, database, trigger string) ActionInfo {
+	return newActionInfo(action, arg1, arg2, database, trigger)
+}
+
 func InterruptedStmt(conn *Conn, query string) *Stmt {
 	return &Stmt{
 		conn:          conn,
