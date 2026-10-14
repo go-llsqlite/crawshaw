@@ -237,3 +237,26 @@ func TestErrorFunc(t *testing.T) {
 
 	stmt.Finalize()
 }
+
+func TestMathFunctions(t *testing.T) {
+	c, err := sqlite.OpenConn(":memory:", 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer c.Close()
+
+	stmt, _, err := c.PrepareTransient("SELECT sqrt(16), pow(2, 10), floor(2.5), ceil(2.5), ln(1), log10(100), pi() > 3.14;")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer stmt.Finalize()
+	if hasRow, err := stmt.Step(); err != nil || !hasRow {
+		t.Fatalf("Step: hasRow=%v err=%v", hasRow, err)
+	}
+	want := []float64{4, 1024, 2, 3, 0, 2, 1}
+	for i, w := range want {
+		if got := stmt.ColumnFloat(i); got != w {
+			t.Errorf("column %d = %v, want %v", i, got, w)
+		}
+	}
+}
