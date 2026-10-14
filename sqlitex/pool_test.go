@@ -199,7 +199,7 @@ func TestSharedCacheLock(t *testing.T) {
 	done := make(chan struct{})
 	go func() {
 		if _, err := stmt.Step(); err != nil {
-			t.Fatal(err)
+			t.Error(err)
 		}
 		close(done)
 	}()
