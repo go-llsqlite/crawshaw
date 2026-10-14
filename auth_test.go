@@ -52,3 +52,19 @@ func TestSetAuthorizer(t *testing.T) {
 		}
 	})
 }
+
+func TestUnknownActionDoesNotPanic(t *testing.T) {
+	// No SQLite release uses this code. An authorizer must still be able to
+	// see it and deny it, rather than the callback ending the process.
+	const unknown = sqlite.OpType(9999)
+	info := sqlite.NewActionInfo(unknown, "arg1", "arg2", "main", "")
+	if info.Action != unknown {
+		t.Errorf("Action = %v, want %v", info.Action, unknown)
+	}
+	if info.Database != "main" {
+		t.Errorf("Database = %q, want %q", info.Database, "main")
+	}
+	if got, want := info.String(), "unknown action: SQLITE_UNKNOWN_OP_TYPE(9999)"; got != want {
+		t.Errorf("String() = %q, want %q", got, want)
+	}
+}
