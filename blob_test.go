@@ -215,7 +215,8 @@ func TestConcurrentBlobWrites(t *testing.T) {
 
 			c, err := sqlite.OpenConn("file::memory:?mode=memory", flags)
 			if err != nil {
-				t.Fatal(err)
+				t.Error(err)
+				return
 			}
 			defer c.Close()
 
@@ -234,7 +235,8 @@ func TestConcurrentBlobWrites(t *testing.T) {
 					return
 				}
 				if n != len(b) {
-					t.Fatalf("n=%d, want %d (i=%d, j=%d)", n, len(b), i, j)
+					t.Errorf("n=%d, want %d (i=%d, j=%d)", n, len(b), i, j)
+					return
 				}
 			}
 		}(i)
