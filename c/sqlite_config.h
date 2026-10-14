@@ -14,6 +14,15 @@
 #ifndef LLSQLITE_CONFIG_H
 #define LLSQLITE_CONFIG_H
 
+/* False positive in GCC 14 and later at -O3:
+ * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=115274
+ * A pragma rather than -Wno-stringop-overread in CFLAGS, because clang does not
+ * know this warning and would report the flag itself on every build. */
+#if defined(__GNUC__) && !defined(__clang__) && __GNUC__ >= 11
+#pragma GCC diagnostic ignored "-Wstringop-overread"
+#endif
+
+
 #define SQLITE_THREADSAFE 2
 #define SQLITE_DEFAULT_WAL_SYNCHRONOUS 1
 #define SQLITE_ENABLE_UNLOCK_NOTIFY 1

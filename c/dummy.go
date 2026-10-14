@@ -10,8 +10,6 @@ package c
 /*
 // SQLITE_* defines live in sqlite_config.h (shared with sqlite.go and the Makefile).
 #cgo CFLAGS: -include sqlite_config.h
-// False positive in GCC 14/15 at -O3: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=115274
-#cgo CFLAGS: -Wno-stringop-overread
 #cgo windows LDFLAGS: -lwinpthread
 #cgo linux LDFLAGS: -ldl -lm
 #cgo linux CFLAGS: -std=c99
