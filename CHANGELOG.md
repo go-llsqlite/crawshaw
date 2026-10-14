@@ -10,7 +10,7 @@ Entries for releases published before this file was added are summarized from ta
 
 ### Added
 
-- Added `Conn.SetDefensive`, wrapping `SQLITE_DBCONFIG_DEFENSIVE`, with the same name and signature as in `zombiezen.com/go/sqlite`.
+- Added `Conn.SetDefensive`, wrapping `SQLITE_DBCONFIG_DEFENSIVE`, with the same name and signature as in `zombiezen.com/go/sqlite`, in [#21](https://github.com/go-llsqlite/crawshaw/pull/21).
 
 ### Changed
 
