@@ -10,6 +10,7 @@ Entries for releases published before this file was added are summarized from ta
 
 ### Changed
 
+- Updated SQLite to `3.54.1`. It includes the fix for a heap use-after-free in FTS5 that a `NEAR` query on a `trigram` table reaches in `3.53.0` (https://sqlite.org/src/info/9c018b02db).
 - Migrated test assertions from the archived `github.com/frankban/quicktest` `v1.14.6` dependency to the maintained `github.com/go-quicktest/qt` `v1.102.0` fork in [#16](https://github.com/go-llsqlite/crawshaw/pull/16).
 
 ### Dependencies
